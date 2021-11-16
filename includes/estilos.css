@@ -1,0 +1,48 @@
+#cabecera {
+    
+    background-color:orange;
+    height: 12.5%;
+    font-family: 'Acme', sans-serif;
+    color: wheat;
+}
+
+.img {
+
+    width:104;
+    height:90;
+}
+
+.form-horizontal {
+
+    border-style: double; 
+    border-radius: 20px; 
+    border-color: orangered;
+    padding: 40; 
+    margin-top: 20;
+    background-color: rgb(247, 220, 101);
+    font-family: 'Cairo', sans-serif;
+    font-weight: bold;
+    
+}
+
+.btn {
+
+    font-weight: bold;
+    background-color: orangered;
+    border-color: rgb(255, 0, 0);
+}
+
+#pie {
+
+    background-color:orange;
+    height: 8%;
+    margin-top: 3.6%;
+    font-family: 'Acme', sans-serif;
+    color: wheat;
+}
+
+.img2 {
+
+    width:50;
+    height:45.5;
+}
