@@ -1,5 +1,5 @@
 <div class="row justify-content-center">
-    <?php echo validar($errores);?>
+    <?php include 'insertar.php'?>
 </div>
 <div class="row justify-content-center">
             <!--Comienzo de la estructura del formulario. Los datos recogidos por el método POST serán recibidos en ejer_26.php-->    
@@ -51,16 +51,16 @@
                     </div>
                     <div class="col-sm">
                         <!--cuadro de texto para recoger la contraseña-->
-                        <label for="passwd">Contraseña</label>
-                        <input type="password" class="form-control" id="passwd" name="passwd"
+                        <label for="password">Contraseña</label>
+                        <input type="password" class="form-control" id="password" name="password"
 
                             <?php
-                                if(isset($_POST["passwd"])){
-                                    echo "value='{$_POST["passwd"]}'";
+                                if(isset($_POST["password"])){
+                                    echo "value='{$_POST["password"]}'";
                                 }
                             ?>  
                         />
-                        <?php  echo mensajeError($errores, "passwd");?>  
+                        <?php  echo mensajeError($errores, "password");?>  
                     </div>
                 </div>
                 <br/>
@@ -92,12 +92,3 @@
                 </div>
             </form> <!--Fin del formulario-->
         </div>
-        <br/>
-        <div class="row justify-content-center">
-            <?php 
-            if (isset($_POST["boton"]) && count($errores) == 0){
-
-                mostrarDatos();
-            }
-            ?>
-        </div>   
