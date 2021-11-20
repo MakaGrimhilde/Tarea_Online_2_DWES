@@ -110,13 +110,13 @@
 
         }
 
-        if (!empty($_POST["passwd"]) && strlen($_POST["passwd"]) >= 6){
+        if (!empty($_POST["password"]) && strlen($_POST["password"]) >= 6){
 
-            $passwd = sha1($_POST["passwd"])."<br/>";
+            $passwd = sha1($_POST["password"])."<br/>";
 
         } else { //de lo contrario, se mostrará el siguiente mensaje de error
 
-            $errores["passwd"] = "La contraseña debe tener una longitud mayor que 6 caracteres";
+            $errores["password"] = "La contraseña debe tener una longitud mayor que 6 caracteres";
            
         }
 
