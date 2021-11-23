@@ -23,6 +23,39 @@ if(isset($_POST["boton"]) and count($errores) == 0){
             $cajatexto = $_POST["cajatexto"];
             $imagen = $_FILES["imagen"]["tmp_name"];
 
+            if (isset($_FILES["imagen"]) and (!empty($_FILES["imagen"]["tmp_name"]))){
+
+                if (!is_dir("fotos")){
+
+                    $carpeta = mkdir("fotos", 0777, true);
+
+                } else {
+
+                    $carpeta = true;
+                }
+
+                if ($carpeta){
+
+                    $nombreImagen= time()."-".$_FILES["imagen"]["name"];
+
+                    $moverImagen = move_uploaded_file($_FILES["imagen"]["tmp_name"], "fotos/".$nombreImagen);
+
+                    $imagen = $nombreImagen;
+
+                    if ($moverImagen){
+
+                        $imgCargada = true;
+
+                    } else {
+
+                        $imgCargada = false;
+
+                        $errores["imagen"] = "Error: La imagen no se cargó correctamente :(";
+                    }
+
+                }
+            }
+
             //inserción en las columnas de la tabla usuarios de los datos de usuario recogidos en el formulario
             $sql = "INSERT INTO usuarios VALUES(NULL, :nombre, :apellidos, :email, :password, :bio, :imagen);";
             $query = $conexion->prepare($sql);
@@ -30,14 +63,16 @@ if(isset($_POST["boton"]) and count($errores) == 0){
                                'bio' => $cajatexto,'imagen' => $imagen]);
 
             //si el insert se ha realizado correctamente mostrará el siguiente mensaje
-            if($query){
+            if ($query){
 
-                echo '<div class="alert alert-success">'."El usuario se registró correctamente! :)".'</div>';
+                echo '<div class="mx-auto col-sm-4 alert alert-success row justify-content-center">'.
+                "El usuario se registró correctamente :)".'</div>';
             }
 
-        }catch(PDOException $ex){ //en caso de error en la inserción se mostraría el siguiente mensaje
+        }catch (PDOException $ex){ //en caso de error en la inserción se mostraría el siguiente mensaje
 
-            echo '<div class="alert alert-danger">'."El usuario no pudo registrarse! :(".'</div>';
+            echo '<div class="mx-auto col-sm-4 alert alert-danger row justify-content-center">'.
+            "El usuario no pudo registrarse :(".'</div>';
 
         }
     
