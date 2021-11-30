@@ -1,11 +1,13 @@
 <?php
 
+//si existe el parámetro id por el método GET y es numérico
 if (isset($_GET["id"]) and is_numeric($_GET["id"])){
 
     $id = $_GET["id"];
 
     try {
 
+        //definición de las variables necesarias para la conexión a la base de datos
         $bdHost = 'localhost';
         $bdName = 'bdusuarios';
         $bdUser = 'root';
@@ -15,6 +17,7 @@ if (isset($_GET["id"]) and is_numeric($_GET["id"])){
         $conexion = new PDO("mysql:host=$bdHost;dbname=$bdName", $bdUser, $bdPass);
         $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+        //sentencia sql que listo todo del usuario según la id en cuestión que tenga
         $sql = "SELECT * FROM usuarios WHERE id = :id;";
         $query = $conexion->prepare($sql);
         $query->execute(['id' => $id]);
@@ -73,6 +76,8 @@ if (isset($_GET["id"]) and is_numeric($_GET["id"])){
                         <th>Imagen</th>
                         <th>Operaciones</th>
                     </tr>
+                    <!--bucle while que recorre toda la tabla usuarios y recoge todos los elementos contenidos en nombre,
+                    apellidos, email, contrasena, biografia e imagen-->
                     <?php while($fila = $query->fetch()){ { ?> 
 
                     <tr>
