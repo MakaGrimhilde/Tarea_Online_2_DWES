@@ -1,5 +1,3 @@
-
-
 <html>
     <head>
         <meta charset="UTF-8">
@@ -21,11 +19,23 @@
     <div class="row justify-content-center" id="cabecera">    
     <h1><img class="img" src="img/logo.png">  Tarea Online 2</h1>
     </div>
+    <ul class="nav">
+        <li class="nav-item">
+            <a class="nav-link" href="index.php">Inicio</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="tablalistar.php">Listar</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="pdf/print_pdf.php">Generar PDF</a>
+        </li>
+    </ul>
     <br/>
     <?php
 
         try {
 
+            //definición de las variables necesarias para la conexión a la base de datos
             $bdHost = 'localhost';
             $bdName = 'bdusuarios';
             $bdUser = 'root';
@@ -35,9 +45,34 @@
             $conexion = new PDO("mysql:host=$bdHost;dbname=$bdName", $bdUser, $bdPass);
             $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            $sql = "SELECT * FROM usuarios;";
+            /**
+             * variables para definir el parámetro pagina pasado por GET, las filas de la tabla que aparecerán en cada página
+             * y el inicio de página
+             */ 
+            $pagina = isset($_GET["pagina"]) ? (int) $_GET["pagina"] : 1;
+            $filaporpag = 3;
+            $inicio = ($pagina > 1) ? ($pagina * $filaporpag - $filaporpag) : 0;
+
+            //sentencia sql para listar las filas existentes en la tabla usuarios y el número de filas por pág que mostrará
+            $sql = "SELECT SQL_CALC_FOUND_ROWS id, nombre, apellidos, email, imagen FROM usuarios LIMIT $inicio, $filaporpag;";
+
+            //preparación y ejecución de la sentencia sql previamente definida
             $query = $conexion->prepare($sql);
-            $resultadoquery = $conexion->query($sql);
+            $query->setFetchMode(PDO::FETCH_ASSOC); 
+            $query->execute();
+            $resultado = $query->fetchAll();
+
+            if (!$resultado){ 
+
+                header('Location:tablalistar.php');
+            }
+
+            //variable que recoge el número total de elementos de la tabla usuarios
+            $totalFilas = $conexion->query('SELECT FOUND_ROWS() as total;');
+            $totalFilas = $totalFilas->fetch()['total'];
+
+            //variable para el número de páginas según el nº de elementos de la tabla y el número de filas por página
+            $numPagina = ceil($totalFilas / $filaporpag); 
 
             if ($query){
 
@@ -55,23 +90,35 @@
     ?>
     <br/><br/>
         <div class="row justify-content-center">
-            <div class="col-sm-6">
+            <div class="col-sm-8">
                 <table class="table table-striped text-center">
                     <tr>
                         <th>Nombre</th>
                         <th>Apellidos</th>
                         <th>Email</th>
+                        <th>Imagen</th>
                         <th>Operaciones</th>
                     </tr>
-                    <?php while($fila = $resultadoquery->fetch()){ { ?> 
+                    <!--bucle foreach que recorre toda la tabla y recoge los elementos que se encuentren en nombre, 
+                    apellidos, email e imagen-->
+                    <?php foreach($resultado as $re){ { ?> 
 
                     <tr>
-                        <td><?=$fila["nombre"]?></td>
-                        <td><?=$fila["apellidos"]?></td>
-                        <td><?=$fila["email"]?></td>
-                        <td><a href="./actualizar.php?id=<?=$fila["id"]?>">Editar</a>&nbsp;&nbsp;
-                        <a href="./eliminar.php?id=<?=$fila["id"]?>">Eliminar</a>&nbsp;&nbsp;
-                        <a href="./tabladetalle.php?id=<?=$fila["id"]?>">Detalle</a>
+                        <td><?=$re["nombre"]?></td>
+                        <td><?=$re["apellidos"]?></td>
+                        <td><?=$re["email"]?></td>
+                        <td>
+                            <?php
+                                if ($re["imagen"] != null){
+
+                                    echo '<img src="fotos/'.$re["imagen"].'" width="40"/>'.$re["imagen"];
+
+                                }
+                            ?>
+                        </td>
+                        <td><a href="./actualizar.php?id=<?=$re["id"]?>">Editar</a>&nbsp;&nbsp;
+                        <a href="./eliminar.php?id=<?=$re["id"]?>">Eliminar</a>&nbsp;&nbsp;
+                        <a href="./tabladetalle.php?id=<?=$re["id"]?>">Detalle</a>
                         </td>
                     </tr>
 
@@ -79,26 +126,6 @@
                 </table>
             </div>
         </div>
-        <div class="row justify-content-center">
-            <nav aria-label="Page navigation example">
-                <ul class="pagination">
-                    <li class="page-item">
-                    <a class="page-link" href="#!" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                        <span class="sr-only">Previous</span>
-                    </a>
-                    </li>
-                    <li class="page-item"><a class="page-link" href="#!">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#!">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#!">3</a></li>
-                    <li class="page-item">
-                    <a class="page-link" href="#!" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                        <span class="sr-only">Next</span>
-                    </a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
+        <?php include 'paginacion.php';?>
     </body>
 </html>
