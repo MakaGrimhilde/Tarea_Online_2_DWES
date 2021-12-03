@@ -1,5 +1,6 @@
 <?php
 
+ //definición de las variables necesarias para la conexión a la base de datos
  $dbHost = 'localhost';
  $dbName = 'bdusuarios';
  $dbUser = 'root';
