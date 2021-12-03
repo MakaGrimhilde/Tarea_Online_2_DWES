@@ -23,9 +23,10 @@ if(isset($_POST["boton"]) and count($errores) == 0){
             $cajatexto = $_POST["cajatexto"];
             $imagen = $_FILES["imagen"]["tmp_name"];
 
+            //si existe un archivo tipo imagen y no está vacío el campo
             if (isset($_FILES["imagen"]) and (!empty($_FILES["imagen"]["tmp_name"]))){
 
-                if (!is_dir("fotos")){
+                if (!is_dir("fotos")){ //si no existe un directorio llamado 'fotos', lo creará
 
                     $carpeta = mkdir("fotos", 0777, true);
 
@@ -34,7 +35,7 @@ if(isset($_POST["boton"]) and count($errores) == 0){
                     $carpeta = true;
                 }
 
-                if ($carpeta){
+                if ($carpeta){ //si está el directorio fotos, la imagen se moverá a dicho directorio
 
                     $nombreImagen= time()."-".$_FILES["imagen"]["name"];
 
@@ -62,11 +63,25 @@ if(isset($_POST["boton"]) and count($errores) == 0){
             $query->execute(['nombre' => $nombre,'apellidos' => $apellidos,'email' => $email,'password' => $passwd,
                                'bio' => $cajatexto,'imagen' => $imagen]);
 
-            //si el insert se ha realizado correctamente mostrará el siguiente mensaje
+            /**
+             * si el insert se ha realizado correctamente mostrará el siguiente mensaje y se ejecutará la sentencia 
+             * sql de inserción en la tabla logs
+             */
             if ($query){
 
                 echo '<div class="mx-auto col-sm-4 alert alert-success row justify-content-center">'.
                 "El usuario se registró correctamente :)".'</div>';
+
+                //variables para el tipo de operación y fecha de la operación para insertar sus valores en la tabla 'logs'
+                $operacion = "Insertar usuario";
+                $fecha = date('Y-m-d H:i:s');
+                
+                //sentencia sql para la inserción de los datos en la tabla logs
+                $sql = "INSERT INTO logs VALUES(NULL, :operacion, :fecha);";
+                $query = $conexion->prepare($sql);
+                $query->execute(['operacion' => $operacion,'fecha' => $fecha]);
+
+
             }
 
         }catch (PDOException $ex){ //en caso de error en la inserción se mostraría el siguiente mensaje

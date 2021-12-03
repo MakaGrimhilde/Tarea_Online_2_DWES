@@ -2,7 +2,7 @@
 
 $id = $_GET["id"];
 
-if (isset($_GET["id"]) and is_numeric($_GET["id"])){
+if (isset($_GET["id"]) and is_numeric($_GET["id"])){ //si existe un id y es numérico
 
     try{
 
@@ -24,6 +24,16 @@ if (isset($_GET["id"]) and is_numeric($_GET["id"])){
         if ($query){
 
             echo '<div class="alert alert-success">'."El usuario se eliminó correctamente :)".'</div>';
+
+            //variables para el tipo de operación y fecha de la operación para insertar sus valores en la tabla 'logs'
+            $operacion = "Eliminar usuario";
+            $fecha = date('Y-m-d H:i:s');
+            
+            //sentencia sql para la inserción de los datos en la tabla logs
+            $sql = "INSERT INTO logs VALUES(NULL, :operacion, :fecha);";
+            $query = $conexion->prepare($sql);
+            $query->execute(['operacion' => $operacion,'fecha' => $fecha]);
+
             header("Location:tablalistar.php");
 
         }

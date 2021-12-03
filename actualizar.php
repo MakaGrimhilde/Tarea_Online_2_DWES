@@ -29,16 +29,18 @@
     </ul>
     <br/>
         <?php
-        
+
+            //variables para almacenar los valores de cada campo a actualizar
             $valorNombre = "";
             $valorApellidos = "";
             $valorEmail = "";
             $valorImagen = "";
             
-            if (isset($_POST["boton"])){
+            if (isset($_POST["boton"])){ //si existe el botón 
             
                 $id = $_POST["id"];
-            
+                
+                //variables que almacenarán los nuevos valores que se introduzcan en el formulario
                 $nombreNuevo = $_POST["nombre"];
                 $apellidosNuevo = $_POST["apellidos"];
                 $emailNuevo = $_POST["email"];
@@ -46,9 +48,10 @@
 
                 $imagen = NULL;
 
-                if (isset($_FILES["imagen"]) and (!empty($_FILES["imagen"]["tmp_name"]))){
+                //si existe un archivo de imagen y no está vacío el campo
+                if (isset($_FILES["imagen"]) and (!empty($_FILES["imagen"]["tmp_name"]))){ 
 
-                    if (!is_dir("fotos")){
+                    if (!is_dir("fotos")){ //si no existe un directorio llamado 'fotos', lo creará
     
                         $carpeta = mkdir("fotos", 0777, true);
     
@@ -57,7 +60,7 @@
                         $carpeta = true;
                     }
     
-                    if ($carpeta){
+                    if ($carpeta){ //si está el directorio fotos, la imagen se moverá a dicho directorio
     
                         $nombreImagen= time()."-".$_FILES["imagen"]["name"];
     
@@ -79,7 +82,7 @@
                     }
                 }
 
-                $imagenNueva = $imagen;
+                $imagenNueva = $imagen; //se almacena la nueva imagen cargada, reemplazando la anterior
             
                 try { 
             
@@ -103,15 +106,26 @@
             
                         echo '<div class="mx-auto col-sm-4 alert alert-success row justify-content-center">'.
                         "El usuario se actualizó correctamente :)".'</div>';
+
+                        //variables para el tipo de operación y fecha de la operación para insertar sus valores en la tabla 'logs'
+                        $operacion = "Actualizar usuario";
+                        $fecha = date('Y-m-d H:i:s');
+                        
+                        //sentencia sql para la inserción de los datos en la tabla logs
+                        $sql = "INSERT INTO logs VALUES(NULL, :operacion, :fecha);";
+                        $query = $conexion->prepare($sql);
+                        $query->execute(['operacion' => $operacion,'fecha' => $fecha]);
                     }
                 
                 
                 }catch (PDOException $ex){ //en caso de error en la inserción se mostraría el siguiente mensaje
                 
-                    echo '<div class="alert alert-danger">'."El usuario no pudo actualizarse! :(".'</div>';
+                    echo '<div class="mx-auto col-sm-4 alert alert-danger row justify-content-center">'.
+                    "El usuario no pudo actualizarse! :(".'</div>';
                 
                 }
-            
+                
+                //se almacenan los valores nuevos introducidos en el formulario
                 $valorNombre = $nombreNuevo;
                 $valorApellidos = $apellidosNuevo;
                 $valorEmail = $emailNuevo;
@@ -119,6 +133,7 @@
             
             } 
             
+            //si existe un id y es numérico
             if(isset($_GET["id"]) && (is_numeric($_GET["id"]))){ 
 
                 $id= $_GET["id"];
@@ -134,21 +149,24 @@
                     //conexión a la base de datos con PDO
                     $conexion = new PDO("mysql:host=$bdHost;dbname=$bdName", $bdUser, $bdPass);
                     $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            
+                    
+                    //sentencia sql para listar todos los datos del registro con una id concreta
                     $sql= "SELECT * FROM usuarios WHERE id=:id;";
                     $query= $conexion->prepare($sql);
                     $query->execute(['id'=> $id]);
 
                     //Si se ejecuta la consulta correctamente
                     if ($query){
+                        
                         echo '<div class="mx-auto col-sm-4 alert alert-success row justify-content-center">'. 
                         "Los datos del usuario se obtuvieron correctamente! :)".'</div>';
                         $fila= $query->fetch(PDO::FETCH_ASSOC);
-                        // Obtenemos los valores para mostrarlos en los campos del formulario
+
+                        //se almacenan los valores para mostrarlos en los campos del formulario
                         $valorNombre = $fila["nombre"];
                         $valorApellidos = $fila["apellidos"];
                         $valorEmail = $fila["email"];
-                        $valorImagen = $fila["imagen"];
+                        $valorImagen = $fila["imagen"];                       
                         
                     }
 
